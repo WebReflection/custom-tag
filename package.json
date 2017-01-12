@@ -1,0 +1,19 @@
+{
+  "name": "custom-tag",
+  "version": "0.0.0",
+  "description": "coming soon",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebReflection/custom-tag.git"
+  },
+  "author": "Andrea Giammarchi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WebReflection/custom-tag/issues"
+  },
+  "homepage": "https://github.com/WebReflection/custom-tag#readme"
+}
