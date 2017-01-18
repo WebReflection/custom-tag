@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>CustomTag</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <style>
+    main { display: block; max-width: 360px; margin: auto; }
+    h2, h3, h5 , h6 { text-align: center; }
+    body { font-family: sans-serif; }
+    pre { background: #f8f8f8; padding: 16px; }
+    .green { color; #0FA; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/github.min.css">
+    <script async src="classtrophobic.min.js"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/javascript.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function () { hljs.initHighlightingOnLoad(); }, false);</script>
+  </head>
+  <body>
+    <main>
+    <h2>CustomTag</h2>
+    <h3>A simplified way to enable Custom Elements.</h3>
+    <pre><code class="javascript">const MyButton = CustomTag({
+  // registered automatically with a name
+  name: 'my-button',
+
+  // supports native extends too
+  extends: 'button',
+  // extends: 'my-prev-comp'
+  // extends: HTMLButtonEmenent (or others)
+
+  // list of properties to watch/observe
+  watch: ['one', 'or-more', 'attributes'],
+  // automatically reflected through the element too
+  // this.one = 1; // triggers changes with string value '1'
+
+  // invoked once per each component
+  // fully customizable once invoked
+  onInit() {
+    this.textContent = this.nodeName; // BUTTON
+    this.on('click', console.log);
+  },
+
+  // invoked on adopt, connect, disconnect, changes
+  onAdopt() {},
+  onConnect() {},
+  onDisconnect() {},
+  onChange(prop, prev, curr) {},
+
+  // any other method, getter, or static
+  // what you can define with classtrophobic
+  // will work out of the box in here too
+  on(...args) {
+    this.addEventListener(...args);
+    return this;
+  }
+});</code></pre>
+    <h6>by Andrea Giammarchi, on <a href="https://github.com/WebReflection/custom-tag/">GitHib</a></h6>
+    </main>
+  </body>
+</html>
