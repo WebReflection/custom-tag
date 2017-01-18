@@ -1,6 +1,6 @@
 # CustomTag
 
-A simplified way to enable Custom Elements.
+The simplest way to define Custom Elements.
 
 Based on [Classtrophobic](https://github.com/WebReflection/classtrophobic),
 usable before or after Babel transpilation.
