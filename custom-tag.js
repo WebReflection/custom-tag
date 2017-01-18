@@ -60,6 +60,7 @@ CustomTag.define = function (options) {'use strict';
   if (onAdopt) options.adoptedCallback = onAdopt;
   if (onDisconnect) options.disconnectedCallback = onDisconnect;
   if (watch) {
+    delete options.watch;
     defineProperty(statics, 'observedAttributes', {
       configurable: true,
       get: function () { return watch; }
@@ -77,6 +78,7 @@ CustomTag.define = function (options) {'use strict';
       }
     });
   }
+  delete options.name;
   Component = (CustomTag.Class || Class)(options);
   customElements.define.apply(
     customElements,
