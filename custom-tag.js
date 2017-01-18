@@ -22,6 +22,7 @@ CustomTag.define = function (options) {'use strict';
     onInit = options.onInit,
     hasInit = !!onInit,
     hasConnect = !!onConnect,
+    hasChange = !!onChange,
     Super = extend ?
       (extendString ?
         (extendNative ?
@@ -30,9 +31,16 @@ CustomTag.define = function (options) {'use strict';
         ) : extend
       ) : HTMLElement,
     Component,
-    WeakInit
+    WeakInit,
+    init
   ;
   if (hasInit) {
+    init = function (self) {
+      if (!WeakInit.has(self)) {
+        WeakInit.add(self);
+        self.onInit();
+      }
+    };
     WeakInit = typeof WeakSet === 'function' ?
       new WeakSet :
       {
@@ -41,16 +49,16 @@ CustomTag.define = function (options) {'use strict';
       }
   }
   options['extends'] = Super;
-  if (onAdopt) options.adoptedCallback = onAdopt;
-  if (onChange) options.attributeChangedCallback = onChange;
-  if (onDisconnect) options.disconnectedCallback = onDisconnect;
+  options.attributeChangedCallback = function () {
+    if (hasInit) init(this);
+    if (hasChange) this.onChange.apply(this, arguments);
+  };
   options.connectedCallback = function () {
-    if (hasInit && !WeakInit.has(this)) {
-      WeakInit.add(this);
-      this.onInit();
-    }
+    if (hasInit) init(this);
     if (hasConnect) this.onConnect.apply(this, arguments);
   };
+  if (onAdopt) options.adoptedCallback = onAdopt;
+  if (onDisconnect) options.disconnectedCallback = onDisconnect;
   if (watch) {
     defineProperty(statics, 'observedAttributes', {
       configurable: true,
