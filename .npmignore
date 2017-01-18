@@ -1,5 +1,6 @@
 .DS_Store
 .gitignore
+index.html
 test.html
 test.js
 node_modules/*

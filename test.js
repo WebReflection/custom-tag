@@ -2,9 +2,14 @@ this.onload = function () {
 
   var test = tressa;
 
-  alert('Results are in console');
-
   test.title('CustomTag');
+  setTimeout(
+    function () {
+      if (!test.exitCode)
+        document.body.className = 'passed';
+    },
+    1000
+  );
 
   test.async(function (done) {
     var MyElement;
