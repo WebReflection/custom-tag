@@ -1,40 +1,25 @@
-const CustomTag = (options) => CustomTag.define(options);
-CustomTag.define = (options) => {
-  const
-    reserved = new Set([
-      'name',
-      'extends',
-      'static',
-      'template',
-      'watch',
-      'onInit',
-      'onChange',
-      'onConnect',
-      'onDisconnect'
-    ]),
-    allowed = (key) => !reserved.has(key),
+function CustomTag(options) { return CustomTag.define(options); }
 
-    extend = options['extends'],
-    statics = options['static'],
+CustomTag.get = customElements.get.bind(CustomTag);
+
+CustomTag.whenDefined = customElements.whenDefined.bind(CustomTag);
+
+CustomTag.define = function (options) {
+  var
+    extend = options.extends,
+    extendString = typeof extend === 'string',
+    extendNative = extendString && extend.indexOf('-') < 0,
+    statics = options.static || (options.static = {}),
     name = options.name,
     watch = options.watch,
-    onInit = options.onInit,
+    onAdopt = options.onAdopt,
     onChange = options.onChange,
     onConnect = options.onConnect,
     onDisconnect = options.onDisconnect,
-
+    onInit = options.onInit,
     hasInit = !!onInit,
     hasConnect = !!onConnect,
-    hasReflect = typeof Reflect !== 'undefined',
-
-    Class = {},
-    Prototype = {},
     WeakInit = hasInit ? new WeakSet() : null,
-
-    ownKeys = (hasReflect ? Reflect : {}).ownKeys ||
-      ((obj) => Object.getOwnPropertyNames(obj).concat(
-        (Object.getOwnPropertySymbols || (() => []))(obj)
-      )),
     init = hasInit ?
       (self) => {
         if (!WeakInit.has(self)) {
@@ -44,57 +29,49 @@ CustomTag.define = (options) => {
       } :
       Object,
     Super = extend ?
-      (typeof extend === 'string' ?
-        customElements.get(extend) : extend) :
-      HTMLElement
+      (extendString ?
+        (extendNative ?
+          document.createElement(extend).constructor :
+          customElements.get(extend)
+        ) :
+        extend
+      ) :
+      HTMLElement,
+    Class
   ;
-
-  class Component extends Super {
-    constructor() {
-      super();
-      if (hasInit) Promise.resolve(this).then(init);
-    }
-    connectedCallback() {
-      if (hasInit) init(this);
-      if (hasConnect) onConnect.apply(this, arguments);
-    }
+  options['extends'] = Super;
+  if (onAdopt) {
+    options.adoptedCallback = onAdopt;
   }
-
+  if (onChange) {
+    options.attributeChangedCallback = onChange;
+  }
+  if (onDisconnect) {
+    options.disconnectedCallback = onDisconnect;
+  }
+  options.connectedCallback = function () {
+    if (hasInit) init(this);
+    if (hasConnect) this.onConnect.apply(this, arguments);
+  };
   if (watch) {
-    Class.observedAttributes = {get: () => watch};
-    watch.forEach((key) => {
-      const isDataset = /^data-/.test(key);
-      const prop = (isDataset ? key.slice(5) : key).replace(
-        /-([a-z])/g,
-        ($0, $1) => $1.toUpperCase()
-      );
-      Prototype[prop] = isDataset ?
-        {
-          get() { return JSON.parse(this.dataset[prop] || 'null'); },
-          set(value) { this.dataset[prop] = JSON.stringify(value); }
-        } : {
-          get() { return this.getAttribute(key); },
-          set(value) { this.setAttribute(key, value); }
+    statics.observedAttributes = function () { return watch; };
+    watch.forEach(function (key) {
+      if (!options.hasOwnProperty(key)) {
+        options[key] = {
+          get: function () { return this.getAttribute(key); },
+          set: function (value) { this.setAttribute(key, value); }
         };
+      }
     });
   }
-
-  if (statics) ownKeys(statics).filter(allowed).forEach((key) => {
-    Class[key] = Object.getOwnPropertyDescriptor(statics, key);
-    Class[key].enumerable = false;
-  });
-
-  Object.defineProperties(Component, Class);
-
-  if (onChange) Prototype.attributeChangedCallback = {value: onChange};
-  if (onDisconnect) Prototype.disconnectedCallback = {value: onDisconnect};
-  ownKeys(options).filter(allowed).forEach((key) => {
-    Prototype[key] = Object.getOwnPropertyDescriptor(options, key);
-    Prototype[key].enumerable = false;
-  });
-
-  Object.defineProperties(Component.prototype, Prototype);
-  customElements.define(name, Component);
-  return Component;
+  Class = CustomTag.Class(options);
+  customElements.define.apply(
+    customElements,
+    extendNative ?
+      [name, Class, {extends: extend}] :
+      [name, Class]
+  );
+  return Class;
 };
+
 try { module.exports = CustomTag; } catch(meh) {}
