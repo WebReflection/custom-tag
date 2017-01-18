@@ -20,6 +20,7 @@ this.onload = function () {
       watch: ['attribute'],
       onInit: function () {
         test(true, 'initialized');
+        test(this instanceof HTMLElement, 'inherited');
         this.textContent = this.nodeName;
       },
       onConnect: function () {
@@ -55,6 +56,7 @@ this.onload = function () {
       watch: ['attri-bute'],
       onInit: function () {
         test(true, 'initialized');
+        test(this instanceof HTMLButtonElement, 'inherited');
         this.textContent = this.nodeName;
       },
       onConnect: function () {
