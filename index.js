@@ -6,6 +6,7 @@ CustomTag.whenDefined = customElements.whenDefined.bind(CustomTag);
 
 CustomTag.define = function (options) {
   var
+    defineProperty = Object.defineProperty,
     extend = options.extends,
     extendString = typeof extend === 'string',
     extendNative = extendString && extend.indexOf('-') < 0,
@@ -54,13 +55,20 @@ CustomTag.define = function (options) {
     if (hasConnect) this.onConnect.apply(this, arguments);
   };
   if (watch) {
-    statics.observedAttributes = function () { return watch; };
+    defineProperty(statics, 'observedAttributes', {
+      enumerable: true,
+      get: function () {
+        return watch;
+      }
+    });
     watch.forEach(function (key) {
       if (!options.hasOwnProperty(key)) {
-        options[key] = {
-          get: function () { return this.getAttribute(key); },
-          set: function (value) { this.setAttribute(key, value); }
-        };
+        defineProperty(options, key, {
+          configurable: true,
+          enumerable: true,
+          get: function get() { return this.getAttribute(key); },
+          set: function set(value) { this.setAttribute(key, value); }
+        });
       }
     });
   }
