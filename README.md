@@ -3,7 +3,7 @@
 The simplest way to define Custom Elements.
 
 Based on [Classtrophobic](https://github.com/WebReflection/classtrophobic),
-usable before or after Babel transpilation.
+[safely usable](https://medium.com/@WebReflection/a-case-for-js-classes-without-classes-9e60b3b5992#.iof2l3x2b) before or after Babel transpilation.
 
 ### API
 ```js
