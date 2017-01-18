@@ -2,9 +2,11 @@
   "name": "custom-tag",
   "version": "0.0.0",
   "description": "coming soon",
-  "main": "index.js",
+  "main": "custom-tag.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "open test.html",
+    "size": "cat custom-tag.js | wc -c;cat custom-tag.min.js | wc -c;gzip -c custom-tag.min.js | wc -c",
+    "minify": "uglifyjs custom-tag.js --comments=all --compress --mangle -o custom-tag.min.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +18,10 @@
     "url": "https://github.com/WebReflection/custom-tag/issues"
   },
   "homepage": "https://github.com/WebReflection/custom-tag#readme",
-  "devDependencies": {}
+  "dependencies": {
+    "classtrophobic": "^0.1.2"
+  },
+  "devDependencies": {
+    "uglify-js": "^2.7.5"
+  }
 }

@@ -1,0 +1,5 @@
+.DS_Store
+.gitignore
+test.html
+test.js
+node_modules/*
