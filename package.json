@@ -1,6 +1,6 @@
 {
   "name": "custom-tag",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "The simplest way to define Custom Elements",
   "main": "custom-tag.js",
   "scripts": {
