@@ -8,6 +8,12 @@ CustomTag.whenDefined = customElements.whenDefined.bind(CustomTag);
 
 CustomTag.define = function (options) {'use strict';
   var
+    withInit = function (hasMethod, method) {
+      return function () {
+        if (hasInit) init(this);
+        if (hasMethod) this[method].apply(this, arguments);
+      };
+    },
     defineProperty = Object.defineProperty,
     statics = options['static'] || (options['static'] = {}),
     extend = options['extends'],
@@ -49,14 +55,9 @@ CustomTag.define = function (options) {'use strict';
       }
   }
   options['extends'] = Super;
-  options.attributeChangedCallback = function () {
-    if (hasInit) init(this);
-    if (hasChange) this.onChange.apply(this, arguments);
-  };
-  options.connectedCallback = function () {
-    if (hasInit) init(this);
-    if (hasConnect) this.onConnect.apply(this, arguments);
-  };
+  options.attributeChangedCallback = withInit(hasChange, 'onChange');
+  options.connectedCallback = withInit(hasConnect, 'onConnect');
+  options.createdCallback = withInit(false, '');
   if (onAdopt) options.adoptedCallback = onAdopt;
   if (onDisconnect) options.disconnectedCallback = onDisconnect;
   if (watch) {
